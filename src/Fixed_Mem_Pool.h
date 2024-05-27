@@ -4,6 +4,12 @@
 #include <cassert>
 #include <vector>
 
+
+#define AlignNum  8
+#define _RoundUp(size, alignNum)     \
+    (((size) + (alignNum) - 1) & ~((alignNum) - 1))
+
+
 template<class T>
 class Fixed_Mem_Pool{
 public:
@@ -30,6 +36,7 @@ template<class T>
 Fixed_Mem_Pool<T>::Fixed_Mem_Pool(size_t size)
     :_pool_size(size), _remainBytes(size){
     _objSize = sizeof(T) < sizeof(void*) ? sizeof(void*) : sizeof(T);
+    _objSize = _RoundUp(_objSize, AlignNum);
     _memory = (void*)malloc(_pool_size);
     if (!_memory){
         throw std::bad_alloc();
