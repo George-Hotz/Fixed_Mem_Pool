@@ -24,7 +24,7 @@ void* Fixed_Mem_Pool::palloc(){
 
     if(_freelist){
         obj = _freelist;
-        _freelist = _freelist->next;
+        _freelist = objNext(_freelist);
     }else{
         if(_remainBytes < _objSize){
             _memory = (void*)malloc(_pool_size);
@@ -44,9 +44,13 @@ void* Fixed_Mem_Pool::palloc(){
 
 
 void Fixed_Mem_Pool::pfree(void *obj){
-    Chunk *node = (Chunk*)obj;
-    node->next = _freelist;
-    _freelist = node;
+    objNext(obj) = _freelist;
+    _freelist = obj;
+}
+
+
+void*& Fixed_Mem_Pool::objNext(void* obj){
+    return *(void**)obj;
 }
 
 
